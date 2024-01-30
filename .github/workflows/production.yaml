@@ -31,9 +31,9 @@ jobs:
           git fetch origin production
           git checkout production
           if [ ${FORCE,,:1} == "y" ]; then
-            git rebase origin $BRANCH --no-reapply-cherry-picks 
+            git rebase origin ${{ github.ref_name }} --no-reapply-cherry-picks 
             git push --force-with-lease
           else
-            git merge --ff-only origin $BRANCH
+            git merge --ff-only origin ${{ github.ref_name }}
             git push
           fi
