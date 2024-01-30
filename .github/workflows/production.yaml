@@ -20,10 +20,10 @@ jobs:
       - name: Fast-forward the production branch and trigger the GCP production deploy workflow
         # if we don't do this, the merge will not cause the production branch action to run see https://docs.github.com/en/actions/using-workflows/triggering-a-workflow#triggering-a-workflow-from-a-workflow
         env:
-          GH_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
+          WORKFLOW_USER: ${{ secrets.WORKFLOW_USER }}
+          WORKFLOW_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
         run: |
           git fetch origin production
           git checkout production
           git merge --ff-only origin/${{ github.ref_name }}
-          git push
-          gh workflow run .github/workflows/deploy-to-gcp.yaml --ref production
+          git push https://$WORKFLOW_USER:$WORKFLOW_TOKEN@github.com/${{ github.repository }} HEAD:${{ github.ref }}
