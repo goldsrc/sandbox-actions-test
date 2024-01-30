@@ -1,7 +1,12 @@
 name: Deploy to production (GCP & Vercel)
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Force rewite of production branch (use only if the previous release was a cherry-pick)"
+        required: false
+        default: "false"
 
 jobs:
   merge_production:
@@ -19,10 +24,6 @@ jobs:
           token: ${{ secrets.WORKFLOW_TOKEN }}
 
       - name: Fast-forward the production branch and trigger the GCP production deploy workflow
-        # if we don't do this, the merge will not cause the production branch action to run see https://docs.github.com/en/actions/using-workflows/triggering-a-workflow#triggering-a-workflow-from-a-workflow
-        # env:
-        #   WORKFLOW_USER: ${{ secrets.WORKFLOW_USER }}
-        #   WORKFLOW_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
         run: |
           git fetch origin production
           git checkout production
