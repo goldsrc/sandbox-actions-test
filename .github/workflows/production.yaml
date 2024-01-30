@@ -27,7 +27,7 @@ jobs:
         run: |
           git fetch origin production
           git checkout production
-          if [ "${{ github.event.inputs.force,,:1}}" == "y" ]; then
+          if [ "${GITHUB_EVENT_INPUTS_FORCE,,:1}" == "y" ]; then
             git rebase origin/${{ github.ref_name }} --no-reapply-cherry-picks 
             git push --force-with-lease
           else
