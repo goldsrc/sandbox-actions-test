@@ -29,7 +29,7 @@ jobs:
           git fetch origin production
           git checkout production
           if [ "${{ github.event.inputs.force}}" == "true" ]; then
-            git rebase origin/${{ github.ref_name }} --no-reapply-cherry-picks 
+            git reset --hard origin/${{ github.ref_name }} 
             git push --force-with-lease
           else
             git merge --ff-only origin/${{ github.ref_name }}
