@@ -24,7 +24,7 @@ jobs:
           fetch-depth: 0 # required for rebasing to work
           token: ${{ secrets.WORKFLOW_TOKEN }}
 
-      - name: Fast-forward the production branch and trigger the GCP production deploy workflow
+      - name: "${{ github.event.inputs.force == 'true' && 'Force rewrite' || 'Fast-forward' }} the production branch"
         run: |
           git fetch origin production
           git checkout production
