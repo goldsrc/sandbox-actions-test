@@ -24,10 +24,6 @@ jobs:
           fetch-depth: 0 # required for rebasing to work
           token: ${{ secrets.WORKFLOW_TOKEN }}
 
-      - name: lowercase input
-        run: |
-          echo "FORCE=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
-
       - name: Fast-forward the production branch and trigger the GCP production deploy workflow
         run: |
           git fetch origin production
