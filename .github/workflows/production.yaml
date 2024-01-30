@@ -26,7 +26,6 @@ jobs:
       - name: Fast-forward the production branch and trigger the GCP production deploy workflow
         env:
           FORCE: ${{ github.event.inputs.force }}
-          BRANCH: ${{ github.ref_name }}
         run: |
           git fetch origin production
           git checkout production
