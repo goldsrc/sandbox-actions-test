@@ -1,0 +1,15 @@
+name: Deploy Next-VD to GCP
+
+on:
+  push:
+    branches:
+      - production
+  workflow_dispatch: {}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Deploy
+        run: echo "Deploying to GCP :)))))))"

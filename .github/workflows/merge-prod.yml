@@ -1,0 +1,29 @@
+name: Deploy to production (GCP & Vercel)
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  merge_production:
+    name: Merge to production
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # required for rebasing to work
+
+      - name: Fast-forward the production branch and trigger the GCP production deploy workflow
+        # if we don't do this, the merge will not cause the production branch action to run see https://docs.github.com/en/actions/using-workflows/triggering-a-workflow#triggering-a-workflow-from-a-workflow
+        env:
+          GH_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
+        run: |
+          git fetch origin production
+          git checkout production
+          git merge --ff-only origin/${{ github.ref_name }}
+          git push
+          gh workflow run .github/workflows/deploy-to-gcp.yaml --ref production
