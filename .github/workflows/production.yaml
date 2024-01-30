@@ -4,9 +4,10 @@ on:
   workflow_dispatch:
     inputs:
       force:
-        description: "Force rewite of production branch Y/N (use ONLY if the previous release was a cherry-pick)"
+        type: boolean
+        description: "Force rewite of production branch (use ONLY if the previous release was a cherry-pick)"
         required: false
-        default: "N"
+        default: false
 
 jobs:
   merge_production:
@@ -23,11 +24,15 @@ jobs:
           fetch-depth: 0 # required for rebasing to work
           token: ${{ secrets.WORKFLOW_TOKEN }}
 
+      - name: lowercase input
+        run: |
+          echo "FORCE=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
+
       - name: Fast-forward the production branch and trigger the GCP production deploy workflow
         run: |
           git fetch origin production
           git checkout production
-          if [ "${GITHUB_EVENT_INPUTS_FORCE,,:1}" == "y" ]; then
+          if [ "${{ github.event.inputs.force}}" == "true" ]; then
             git rebase origin/${{ github.ref_name }} --no-reapply-cherry-picks 
             git push --force-with-lease
           else
