@@ -24,12 +24,10 @@ jobs:
           token: ${{ secrets.WORKFLOW_TOKEN }}
 
       - name: Fast-forward the production branch and trigger the GCP production deploy workflow
-        env:
-          FORCE: ${{ github.event.inputs.force }}
         run: |
           git fetch origin production
           git checkout production
-          if [ ${FORCE,,:1} == "y" ]; then
+          if [ "${{ github.event.inputs.force,,:1}}" == "y" ]; then
             git rebase origin/${{ github.ref_name }} --no-reapply-cherry-picks 
             git push --force-with-lease
           else
