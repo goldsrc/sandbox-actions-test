@@ -1,0 +1,43 @@
+name: Merge to production
+
+on:
+  workflow_dispatch:
+    inputs:
+      strategy:
+        type: choice
+        description: Strategy to merge
+        options:
+          - Fast-forward
+          - Rebase and Force push
+          - Reset and Force push
+        default: Fast-forward
+
+jobs:
+  merge_production:
+    name: Merge to production
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # required for rebasing to work
+          token: ${{ secrets.WORKFLOW_TOKEN }} # if we don't do this, the merge will not cause the production branch action to run see https://docs.github.com/en/actions/using-workflows/triggering-a-workflow#triggering-a-workflow-from-a-workflow
+
+      - name: "${{ github.event.inputs.strategy }} the production branch"
+        run: |
+          git fetch origin production
+          git checkout production
+          if [ "${{ github.event.inputs.strategy}}" == "Rebase and Force push" ]; then
+            git rebase origin/main --no-reapply-cherry-picks
+            git push --force-with-lease
+          elif [ "${{ github.event.inputs.strategy}}" == "Reset and Force push" ]; then
+            git reset --hard origin/main
+            git push --force-with-lease
+          else
+            git merge --ff-only origin/main
+            git push
+          fi
